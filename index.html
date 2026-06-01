@@ -1,1 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+<title>Maaheer NetCafe Money Tracker</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f1f5f9;
+padding:20px;
+color:#111827;
+}
+
+.container{
+max-width:1400px;
+margin:auto;
+}
+
+.header{
+background:linear-gradient(135deg,#2563eb,#1e40af);
+padding:25px;
+border-radius:18px;
+color:white;
+margin-bottom:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+.header h1{
+font-size:32px;
+font-weight:700;
+}
+
+.header p{
+margin-top:5px;
+opacity:0.9;
+}
+
+.form-box{
+background:white;
+padding:20px;
+border-radius:18px;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+}
+
+input,select{
+width:100%;
+padding:13px;
+border-radius:10px;
+border:1px solid #d1d5db;
+font-size:15px;
+outline:none;
+}
+
+input:focus{
+border-color:#2563eb;
+}
+
+.btn{
+background:#2563eb;
+color:white;
+border:none;
+padding:13px;
+border-radius:10px;
+font-size:15px;
+cursor:pointer;
+font-weight:600;
+transition:0.3s;
+}
+
+.btn:hover{
+background:#1d4ed8;
+}
+
+.summary{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+
+.card{
+padding:20px;
+border-radius:18px;
+color:white;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+}
+
+.card h3{
+font-size:18px;
+margin-bottom:10px;
+}
+
+.card p{
+font-size:28px;
+font-weight:700;
+}
+
+.income{
+background:linear-gradient(135deg,#16a34a,#15803d);
+}
+
+.expense{
+background:linear-gradient(135deg,#dc2626,#b91c1c);
+}
+
+.profit{
+background:linear-gradient(135deg,#7c3aed,#5b21b6);
+}
+
+.table-box{
+background:white;
+padding:20px;
+border-radius:18px;
+overflow:auto;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+min-width:1100px;
+}
+
+th{
+background:#2563eb;
+color:white;
+padding:14px;
+font-size:14px;
+}
+
+td{
+padding:12px;
+border-bottom:1px solid #e5e7eb;
+font-size:14px;
+text-align:center;
+}
+
+tr:hover{
+background:#f8fafc;
+}
+
+.action-btn{
+padding:7px 12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+color:white;
+font-size:13px;
+margin:2px;
+}
+
+.edit{
+background:#f59e0b;
+}
+
+.delete{
+background:#dc2626;
+}
+
+.filter-box{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+
+.footer{
+text-align:center;
+margin-top:20px;
+color:#6b7280;
+font-size:14px;
+}
+
+@media(max-width:768px){
+
+.header h1{
+font-size:24px;
+}
+
+.card p{
+font-size:22px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>Maaheer NetCafe Money Tracker</h1>
+<p>Daily Income & Expense Management System</p>
+</div>
+
+<div class="form-box">
+
+<div class="grid">
+
+<input type="date" id="date">
+
+<input type="text" id="customer" placeholder="Customer Name">
+
+<select id="service">
+
+<option value="">Select Service</option>
+
+<option>PAN Card</option>
+<option>Passport</option>
+<option>Ration Card</option>
+<option>Voter Card</option>
+<option>Aadhar Update</option>
+<option>Insurance</option>
+<option>Online Form</option>
+<option>Printing</option>
+<option>Photo</option>
+<option>Other</option>
+
+</select>
+
+<input type="number" id="income" placeholder="Income">
+
+<input type="number" id="expense" placeholder="Expense">
+
+<input type="text" id="notes" placeholder="Notes">
+
+<button class="btn" onclick="saveData()">
+Save Entry
+</button>
+
+</div>
+
+</div>
+
+<div class="filter-box">
+
+<input type="date" id="filterDate">
+
+<input type="text" id="searchInput" placeholder="Search Customer">
+
+<button class="btn" onclick="loadData()">
+Filter
+</button>
+
+<button class="btn" onclick="downloadExcel()">
+Download CSV
+</button>
+
+</div>
+
+<div class="summary">
+
+<div class="card income">
+<h3>Total Income</h3>
+<p id="totalIncome">₹0</p>
+</div>
+
+<div class="card expense">
+<h3>Total Expense</h3>
+<p id="totalExpense">₹0</p>
+</div>
+
+<div class="card profit">
+<h3>Total Profit</h3>
+<p id="totalProfit">₹0</p>
+</div>
+
+</div>
+
+<div class="table-box">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Date</th>
+<th>Customer</th>
+<th>Service</th>
+<th>Income</th>
+<th>Expense</th>
+<th>Profit</th>
+<th>Notes</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+</div>
+
+<div class="footer">
+Maaheer NetCafe © 2026
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+
+getFirestore,
+collection,
+addDoc,
+getDocs,
+deleteDoc,
+doc,
+updateDoc,
+query,
+orderBy
+
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+apiKey: "YOUR_API_KEY",
+
+authDomain: "YOUR_PROJECT.firebaseapp.com",
+
+projectId: "YOUR_PROJECT_ID",
+
+storageBucket: "YOUR_PROJECT.appspot.com",
+
+messagingSenderId: "XXXXXXX",
+
+appId: "XXXXXXX"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+let editId = null;
+
+window.saveData = async function(){
+
+let date = document.getElementById("date").value;
+let customer = document.getElementById("customer").value;
+let service = document.getElementById("service").value;
+let income = Number(document.getElementById("income").value);
+let expense = Number(document.getElementById("expense").value);
+let notes = document.getElementById("notes").value;
+
+if(!date || !customer || !service){
+
+alert("Fill all required fields");
+
+return;
+
+}
+
+let profit = income - expense;
+
+const data = {
+
+date,
+customer,
+service,
+income,
+expense,
+profit,
+notes
+
+};
+
+if(editId){
+
+await updateDoc(doc(db,"transactions",editId),data);
+
+editId = null;
+
+alert("Updated Successfully");
+
+}else{
+
+await addDoc(collection(db,"transactions"),data);
+
+alert("Saved Successfully");
+
+}
+
+clearForm();
+
+loadData();
+
+}
+
+function clearForm(){
+
+document.getElementById("date").value="";
+document.getElementById("customer").value="";
+document.getElementById("service").value="";
+document.getElementById("income").value="";
+document.getElementById("expense").value="";
+document.getElementById("notes").value="";
+
+}
+
+window.loadData = async function(){
+
+const tableBody =
+document.getElementById("tableBody");
+
+tableBody.innerHTML="";
+
+let totalIncome=0;
+let totalExpense=0;
+let totalProfit=0;
+
+const q = query(
+collection(db,"transactions"),
+orderBy("date","desc")
+);
+
+const snapshot = await getDocs(q);
+
+let filterDate =
+document.getElementById("filterDate").value;
+
+let search =
+document.getElementById("searchInput")
+.value.toLowerCase();
+
+snapshot.forEach((item)=>{
+
+let data = item.data();
+
+if(filterDate && data.date !== filterDate){
+return;
+}
+
+if(search &&
+!data.customer.toLowerCase().includes(search)){
+return;
+}
+
+totalIncome += data.income;
+totalExpense += data.expense;
+totalProfit += data.profit;
+
+tableBody.innerHTML += `
+
+<tr>
+
+<td>${data.date}</td>
+
+<td>${data.customer}</td>
+
+<td>${data.service}</td>
+
+<td>₹${data.income}</td>
+
+<td>₹${data.expense}</td>
+
+<td>₹${data.profit}</td>
+
+<td>${data.notes}</td>
+
+<td>
+
+<button class="action-btn edit"
+onclick="editData(
+'${item.id}',
+'${data.date}',
+'${data.customer}',
+'${data.service}',
+'${data.income}',
+'${data.expense}',
+'${data.notes}'
+)">
+Edit
+</button>
+
+<button class="action-btn delete"
+onclick="deleteData('${item.id}')">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById("totalIncome")
+.innerText = "₹"+totalIncome;
+
+document.getElementById("totalExpense")
+.innerText = "₹"+totalExpense;
+
+document.getElementById("totalProfit")
+.innerText = "₹"+totalProfit;
+
+}
+
+window.deleteData = async function(id){
+
+let confirmDelete =
+confirm("Delete this entry?");
+
+if(confirmDelete){
+
+await deleteDoc(doc(db,"transactions",id));
+
+loadData();
+
+}
+
+}
+
+window.editData = function(
+id,
+date,
+customer,
+service,
+income,
+expense,
+notes
+){
+
+editId = id;
+
+document.getElementById("date").value=date;
+document.getElementById("customer").value=customer;
+document.getElementById("service").value=service;
+document.getElementById("income").value=income;
+document.getElementById("expense").value=expense;
+document.getElementById("notes").value=notes;
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+window.downloadExcel = async function(){
+
+const q = query(
+collection(db,"transactions"),
+orderBy("date","desc")
+);
+
+const snapshot = await getDocs(q);
+
+let csv =
+"Date,Customer,Service,Income,Expense,Profit,Notes\n";
+
+snapshot.forEach((item)=>{
+
+let d = item.data();
+
+csv +=
+`${d.date},${d.customer},${d.service},${d.income},${d.expense},${d.profit},${d.notes}\n`;
+
+});
+
+let blob = new Blob([csv],{
+type:'text/csv'
+});
+
+let a = document.createElement('a');
+
+a.href = URL.createObjectURL(blob);
+
+a.download = "maaheer-money-tracker.csv";
+
+a.click();
+
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>
